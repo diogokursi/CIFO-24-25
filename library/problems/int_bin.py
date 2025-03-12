@@ -34,7 +34,7 @@ class IntBinSolution(Solution):
         super().__init__(repr=repr)
 
     # Override the superclass's methods
-    def random_initial_value(self):
+    def random_initial_representation(self):
         # Generate random integer between 1 and 15
         random_n = random.randint(1, 15)
         # Transform it into its binary string representation with 4 digits
@@ -46,19 +46,32 @@ class IntBinSolution(Solution):
 # Algorithm specific
 class IntBinHillClimbingSolution(IntBinSolution):
     def get_neighbors(self):
-        neighbors = []
         # Convert binary string to list of bits
-        repr_list = list(self.repr)
+        # Strings are not mutable, that's why we are converting to list
+        list_repr = list(self.repr)
 
-        for idx, digit in enumerate(repr_list):
-            neighbor_list_repr = deepcopy(repr_list)
-            
-            if digit == '1':
-                neighbor_list_repr[idx] = '0'
-            elif digit == '0':
-                neighbor_list_repr[idx] = '1'
-            
+        neighbors_repr = []
+
+        for digit_idx in range(len(list_repr)):
+            neighbor_list_repr = deepcopy(list_repr)
+
+            if list_repr[digit_idx] == "1":
+                neighbor_list_repr[digit_idx] = "0"
+            else:
+                neighbor_list_repr[digit_idx] = "1"
+
+            # Convert list back to string
             neighbor_repr = "".join(neighbor_list_repr)
-            neighbors.append(IntBinHillClimbingSolution(neighbor_repr))
+            neighbors_repr.append(neighbor_repr)
+
+        # Edge cases: Invalid neighbor '0000'
+        if "0000" in neighbors_repr:
+            neighbors_repr.remove("0000")
+
+        # Create neighbors from binary representations
+        neighbors = []
+        for neighbor_repr in neighbors_repr:
+            neighbors.append(IntBinHillClimbingSolution(repr=neighbor_repr))
 
         return neighbors
+
